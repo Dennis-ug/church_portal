@@ -1,8 +1,15 @@
+import 'dart:ffi';
+import 'dart:io';
+
+import 'package:dotted_border/dotted_border.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../reponsive/res.dart';
 import '../dialouge/dialouge.dart';
+import 'contro.dart';
 
 class Adverts extends StatelessWidget {
   const Adverts({Key? key}) : super(key: key);
@@ -48,31 +55,19 @@ class Adverts extends StatelessWidget {
                 showDialog(
                     context: context,
                     builder: (context) {
-                      return Padding(
-                        padding: const EdgeInsets.all(100),
-                        child: AddDialouge(
-                          child: Column(
-                            children: [
-                              Text(
-                                'Add Advert',
-                                style: contentStyle,
-                              ),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    width: size.cal_wdth(200),
-                                    child: Form(
-                                      child: Column(
-                                        children: [TextFormField()],
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
+                      return AlertDialog(
+                        content: AddAdvert(
+                          size: size,
+                          contentStyle: contentStyle,
                         ),
                       );
+                      // Padding(
+                      //   padding: const EdgeInsets.all(100),
+                      //   child: AddDialouge(
+                      //     child:
+                      //
+                      //   ),
+                      // );
                     });
               },
               child: Container(
@@ -211,5 +206,175 @@ class Adverts extends StatelessWidget {
       ],
     );
     ;
+  }
+}
+
+class AddAdvert extends StatelessWidget {
+  AddAdvert({
+    Key? key,
+    required this.size,
+    required this.contentStyle,
+  }) : super(key: key);
+
+  final Responsive size;
+  final TextStyle contentStyle;
+  final _contro = Get.put(AddvertControll());
+
+  @override
+  Widget build(BuildContext context) {
+    // File img =
+    return Container(
+      width: size.cal_wdth(1089),
+      child: Column(
+        children: [
+          Text(
+            'Add Advert',
+            style: contentStyle,
+          ),
+          SizedBox(
+            height: size.cal_hyt(40),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(
+                width: size.cal_wdth(328),
+                height: size.cal_hyt(653),
+                child: Form(
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          label: Text("Title"),
+                        ),
+                      ),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          label: const Text("Owner"),
+                        ),
+                      ),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          label: const Text("Contact"),
+                        ),
+                      ),
+                      // TextFormField(
+                      //   decoration: InputDecoration(
+                      //     label: Text("Duration"),
+                      //   ),
+                      // ),
+                      // DropdownButtonFormField(items:  <DropdownMenuItem<int>>[DropdownMenuItem<>(child: Te)], onChanged: (value){})
+                    ],
+                  ),
+                ),
+              ),
+              Column(
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      _contro.loading.value == true;
+                      FilePickerResult? result = await FilePicker.platform
+                          .pickFiles(allowedExtensions: ['jpg', 'png']).then(
+                              (value) {
+                        _contro.loading.value == false;
+                      });
+
+                      if (result != null) {
+                        _contro.img.value = result.files.single.path ?? '';
+                        // File file = File(result.files.single.path);
+                      } else {
+                        // User canceled the picker
+                      }
+                    },
+                    child: Obx(
+                      () => _contro.img.value == '' &&
+                              _contro.loading.value == false
+                          ? DottedBorder(
+                              color: const Color(0xff071832),
+                              dashPattern: const [3, 3],
+                              strokeWidth: 1,
+                              child: SizedBox(
+                                height: size.cal_hyt(251),
+                                width: size.cal_wdth(355),
+                                child: Icon(
+                                  Icons.add_a_photo,
+                                  size: size.cal_hyt(80),
+                                  color: const Color(0xff071832),
+                                ),
+                              ),
+                            )
+                          : _contro.img.value == '' &&
+                                  _contro.loading.value == true
+                              ? const CircularProgressIndicator.adaptive()
+                              : Image.file(
+                                  File(
+                                    _contro.img.value,
+                                  ),
+                                  height: size.cal_hyt(180),
+                                ),
+                    ),
+                  ),
+                  Text(
+                    'Only selects jpg or png files',
+                    style: GoogleFonts.poppins(
+                      fontStyle: FontStyle.italic,
+                      color: const Color(0xff071832).withOpacity(0.35),
+                    ),
+                    // textDirection: TextD,
+                  )
+                ],
+              )
+            ],
+          ),
+          const Spacer(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  _contro.img.value == '';
+                  Get.back();
+                },
+                child: Container(
+                  height: size.cal_hyt(56),
+                  width: size.cal_wdth(189),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffE8E8E8),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Cancel',
+                      style: GoogleFonts.poppins(),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: size.cal_wdth(40),
+              ),
+              Container(
+                height: size.cal_hyt(56),
+                width: size.cal_wdth(189),
+                decoration: BoxDecoration(
+                  color: const Color(0xff2B9B3C),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Text(
+                    'Add advert',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: size.cal_hyt(20),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
   }
 }
