@@ -275,10 +275,7 @@ class AddAdvert extends StatelessWidget {
                     onTap: () async {
                       _contro.loading.value == true;
                       FilePickerResult? result = await FilePicker.platform
-                          .pickFiles(allowedExtensions: ['jpg', 'png']).then(
-                              (value) {
-                        _contro.loading.value == false;
-                      });
+                          .pickFiles(allowedExtensions: ['jpg', 'png']);
 
                       if (result != null) {
                         _contro.img.value = result.files.single.path ?? '';
@@ -288,8 +285,7 @@ class AddAdvert extends StatelessWidget {
                       }
                     },
                     child: Obx(
-                      () => _contro.img.value == '' &&
-                              _contro.loading.value == false
+                      () => _contro.img.value.isEmpty
                           ? DottedBorder(
                               color: const Color(0xff071832),
                               dashPattern: const [3, 3],
@@ -304,15 +300,17 @@ class AddAdvert extends StatelessWidget {
                                 ),
                               ),
                             )
-                          : _contro.img.value == '' &&
-                                  _contro.loading.value == true
-                              ? const CircularProgressIndicator.adaptive()
-                              : Image.file(
+                          : Column(
+                              children: [
+                                Image.file(
                                   File(
                                     _contro.img.value,
                                   ),
                                   height: size.cal_hyt(180),
                                 ),
+                                
+                              ],
+                            ),
                     ),
                   ),
                   Text(
