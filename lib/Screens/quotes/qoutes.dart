@@ -42,7 +42,7 @@ class Quotes extends StatelessWidget {
           height: size.cal_hyt(40),
         ),
         Text(
-          'Quotes',
+          'Running Bible Quotes ',
           style: GoogleFonts.poppins(
             fontSize: size.cal_wdth(24),
             color: const Color(0xff071832),
